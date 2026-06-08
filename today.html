@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Today · Nashville · Alan Jackson</title>
+<style>
+  :root {
+    --bg: #0a0a0a; --card: #141414; --border: #222;
+    --text: #e0e0e0; --dim: #888; --accent: #ff6a00;
+    --green: #2ecc71; --red: #e74c3c; --blue: #3498db;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.5;
+    max-width: 480px; margin: 0 auto; padding: 16px 16px 40px;
+    -webkit-text-size-adjust: 100%;
+  }
+  .header { text-align: center; padding: 16px 0 12px; border-bottom: 1px solid var(--border); margin-bottom: 12px; }
+  .header .day-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); font-weight: 700; }
+  .header h1 { font-size: 1.3rem; font-weight: 700; margin: 4px 0; }
+  .header .date { color: var(--dim); font-size: 0.85rem; }
+  .status-bar { display: flex; gap: 6px; margin-bottom: 12px; overflow-x: auto; }
+  .status-pill { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 4px 10px; font-size: 0.72rem; white-space: nowrap; flex-shrink: 0; }
+  .status-pill.good { border-color: var(--green); color: var(--green); }
+  .status-pill.warn { border-color: var(--accent); color: var(--accent); }
+  .section { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 12px; }
+  .section h2 { font-size: 0.95rem; margin-bottom: 8px; }
+  .weather-row { display: flex; gap: 8px; overflow-x: auto; }
+  .weather-day { background: var(--bg); border-radius: 8px; padding: 8px 12px; text-align: center; min-width: 80px; flex-shrink: 0; }
+  .weather-day .day { font-size: 0.65rem; color: var(--dim); text-transform: uppercase; }
+  .weather-day .hi { font-weight: 700; font-size: 1.1rem; }
+  .weather-day .lo { font-size: 0.7rem; color: var(--dim); }
+  .weather-day .rain { font-size: 0.65rem; color: var(--blue); }
+  .event { padding: 8px 10px; background: var(--bg); border-radius: 6px; margin-bottom: 4px; font-size: 0.85rem; }
+  .event .time { font-weight: 600; color: var(--accent); }
+  .rec-card { padding: 10px; background: var(--bg); border-radius: 8px; margin-bottom: 6px; }
+  .rec-card .name { font-weight: 600; }
+  .rec-card .meta { font-size: 0.72rem; color: var(--dim); margin-top: 2px; }
+  .tip { font-size: 0.8rem; padding: 8px 12px; background: rgba(52,152,219,0.08); border-radius: 8px; margin-bottom: 6px; }
+  .tip strong { color: var(--blue); }
+  .thumbs { display: flex; gap: 4px; margin-top: 6px; }
+  .thumbs button {
+    background: var(--card); border: 1px solid var(--border); border-radius: 6px;
+    color: var(--dim); font-size: 0.85rem; padding: 2px 6px; cursor: pointer;
+    transition: all 0.15s;
+  }
+  .thumbs button:hover { border-color: var(--accent); }
+  .thumbs button.voted-up { background: rgba(46,204,113,0.15); border-color: var(--green); color: var(--green); }
+  .thumbs button.voted-down { background: rgba(231,76,60,0.15); border-color: var(--red); color: var(--red); }
+  .footer { text-align: center; font-size: 0.65rem; color: var(--dim); margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border); }
+  .footer a { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="day-label" id="day-label">Loading...</div>
+  <h1>Alan Jackson · Last Call</h1>
+  <div class="date" id="day-date"></div>
+</div>
+
+<div class="status-bar" id="status-bar"></div>
+
+<div class="section" id="weather-section">
+  <h2>🌤️ Weather</h2>
+  <div class="weather-row" id="weather-content"></div>
+</div>
+
+<div class="section" id="timeline-section">
+  <h2>📅 Today</h2>
+  <div id="timeline-content"></div>
+</div>
+
+<div class="section" id="food-section">
+  <h2>🍽️ Eat & Drink</h2>
+  <div id="food-content"></div>
+</div>
+
+<div class="section" id="transit-section" style="display:none">
+  <h2>🚊 Getting Around</h2>
+  <div id="transit-content"></div>
+</div>
+
+<div class="section" id="tip-section">
+  <h2>💡 Vicky's Tip</h2>
+  <div class="tip" id="tip-content"></div>
+</div>
+
+<div class="footer">
+  Atlas Travel Concierge · <a href="index.html">📍 Full Briefing</a> · <a href="https://jarvisdanley.github.io">🏠 All Trips</a>
+</div>
+
+<script>
+var TRIP = {
+  start: '2026-06-26',
+  end: '2026-06-28',
+  days: [
+    {
+      date: '2026-06-26',
+      label: 'Friday · Arrival Day',
+      weather: { hi: 88, lo: 67, icon: '⛅', rain: 26 },
+      pills: [
+        { text: '✈️ Flight On Time', cls: 'good' },
+        { text: '🏨 Check-in 4pm', cls: 'good' }
+      ],
+      timeline: [
+        { time: '1:25 PM', text: 'Depart MCI on SWA 2533' },
+        { time: '3:00 PM', text: 'Land at BNA · Uber to hotel (~$20)' },
+        { time: '4:00 PM', text: 'Check in at Drift Nashville' },
+        { time: 'Evening', text: 'Broadway honky-tonks · AJ\'s Good Time Bar' },
+        { time: '7:00 PM', text: 'Grand Ole Opry — American Aquarium, Chris Housman + TBA' }
+      ],
+      transit: [
+        'BNA → Hotel: Uber/Lyft $15–28 (15–25min)',
+        'Hotel → Broadway: Walk 15min via Pedestrian Bridge',
+        'Hotel → Stadium: Walk 6–8min (same side of river!)'
+      ],
+      tip: 'You land at 3pm and check-in is 4pm — perfect timing. Drop your bags, freshen up, and head across the Pedestrian Bridge to Broadway. AJ\'s Good Time Bar is the essential first stop — Alan Jackson\'s own honky-tonk at 421 Broadway. The Opry has shows tonight with surprise guests likely.',
+      food: [
+        { name: 'The Southern Steak & Oyster', meta: '📍 150 3rd Ave S · ~1.0 mi · Dry-aged steaks + seafood', id: 'today-steak-southern' },
+        { name: 'Prince\'s Hot Chicken', meta: '📍 5055 Broadway Pl · ~1.2 mi · The 100-year original', id: 'today-chicken-princes' },
+        { name: 'Crema Coffee Roasters', meta: '📍 15 Hermitage Ave · ~0.8 mi · Specialty roaster', id: 'today-coffee-crema' }
+      ]
+    },
+    {
+      date: '2026-06-27',
+      label: 'Saturday · Concert Day 🎤',
+      weather: { hi: 88, lo: 67, icon: '🌧️', rain: 56 },
+      pills: [
+        { text: '⚠️ Rain 56%', cls: 'warn' },
+        { text: '🏳️‍🌈 Pride Parade 10am', cls: 'warn' },
+        { text: '🎤 Show 5:30pm', cls: 'good' }
+      ],
+      timeline: [
+        { time: '⚠️ 7am–1pm', text: 'Broadway CLOSED for Pride Parade (8th→2nd Ave)' },
+        { time: '10:00 AM', text: 'Nashville Pride Parade · Free on Broadway' },
+        { time: 'Morning', text: 'Music Row / Country Music HOF · Avoid driving downtown' },
+        { time: '4:00 PM', text: 'Gates open at Nissan Stadium · 6-min walk from hotel' },
+        { time: '5:30 PM', text: 'ALAN JACKSON: LAST CALL — THE FINALE' },
+        { time: '📺 NBC', text: 'Filming for prime-time special — cameras everywhere' },
+        { time: 'Post-show', text: 'AJ\'s Good Time Bar · Walk back to hotel' }
+      ],
+      transit: [
+        '⚠️ Broadway closed 7am–1pm for Pride Parade',
+        'Hotel → Stadium: Walk 6–8min (avoids all traffic)',
+        'Do NOT drive downtown before 1pm'
+      ],
+      tip: 'This is it. Alan Jackson\'s final full concert ever. 50,000 fans, George Strait, Eric Church, Lainey Wilson, and a dozen more country legends. NBC is filming for a prime-time special. The Pride Parade closes Broadway until 1pm so use the morning for Music Row or the Country Music HOF — they\'re away from the parade route. Walk to Nissan Stadium from the hotel (6 min) and you\'ll skip all the traffic. Pack a poncho — 56% rain chance.',
+      food: [
+        { name: 'Jeff Ruby\'s Steakhouse', meta: '📍 300 4th Ave N · ~1.2 mi · Voted best in Nashville', id: 'today-steak-jeff-rubys' },
+        { name: 'Hattie B\'s Hot Chicken', meta: '📍 5055 Broadway Pl · ~1.2 mi · Online ordering available', id: 'today-chicken-hattie' },
+        { name: 'Frothy Monkey', meta: '📍 235 Rep. John Lewis Way N · ~1.0 mi · Local roaster + full menu', id: 'today-coffee-frothy' }
+      ]
+    },
+    {
+      date: '2026-06-28',
+      label: 'Sunday · Departure',
+      weather: { hi: 89, lo: 68, icon: '⛅', rain: 37 },
+      pills: [
+        { text: '🏨 Check-out 11am', cls: 'good' },
+        { text: '✈️ Flight 6:55pm', cls: 'good' },
+        { text: '🏊 Pool Party 11am', cls: 'good' }
+      ],
+      timeline: [
+        { time: '11:00 AM', text: 'Hotel check-out · Store bags at front desk' },
+        { time: '11am–4pm', text: 'Pride Pool Party at Drift Nashville (~$38)' },
+        { time: 'Daytime', text: 'Explore: Centennial Park, Parthenon, or more Broadway' },
+        { time: '6:55 PM', text: 'Depart BNA on SWA 3898' },
+        { time: '8:35 PM', text: 'Arrive MCI' }
+      ],
+      transit: [
+        'Hotel → BNA: Uber/Lyft $15–28 (15–25min)',
+        'Free day — bags stored at hotel until your flight'
+      ],
+      tip: 'Late flight means a full day to soak up Nashville. Check out at 11, store your bags, and head out. The hotel is hosting a Pride Pool Party if you want a relaxed close to the weekend. Centennial Park and the Parthenon are great daytime options. Head to BNA by ~5pm for your 6:55pm flight.',
+      food: [
+        { name: 'Culaccino', meta: '📍 900 Commerce St · ~1.2 mi · Authentic Italian trattoria', id: 'today-dinner-culaccino' },
+        { name: 'The Farm House', meta: '📍 210 Almond St · ~1.0 mi · Farm-to-table Southern', id: 'today-dinner-farm-house' },
+        { name: 'Elegy Coffee', meta: '📍 150 4th Ave N · ~1.1 mi · Craft micro-roaster', id: 'today-coffee-elegy' }
+      ]
+    }
+  ]
+};
+
+function getToday() {
+  var now = new Date();
+  var tripStart = new Date(TRIP.start + 'T00:00:00-05:00');
+  var tripEnd = new Date(TRIP.end + 'T23:59:59-05:00');
+
+  if (now < tripStart) {
+    return { day: TRIP.days[0], idx: 0, mode: 'pre-trip' };
+  }
+  if (now > tripEnd) {
+    return { day: TRIP.days[TRIP.days.length-1], idx: TRIP.days.length-1, mode: 'post-trip' };
+  }
+
+  for (var i = 0; i < TRIP.days.length; i++) {
+    var dayStart = new Date(TRIP.days[i].date + 'T00:00:00-05:00');
+    var dayEnd = new Date(TRIP.days[i].date + 'T23:59:59-05:00');
+    if (now >= dayStart && now <= dayEnd) {
+      return { day: TRIP.days[i], idx: i, mode: 'active' };
+    }
+  }
+
+  return { day: TRIP.days[0], idx: 0, mode: 'pre-trip' };
+}
+
+function render() {
+  var t = getToday();
+  var d = t.day;
+
+  // Header
+  document.getElementById('day-label').textContent = d.label;
+  document.getElementById('day-date').textContent = d.date;
+
+  // Status pills
+  var pills = '';
+  d.pills.forEach(function(p) {
+    pills += '<span class="status-pill ' + p.cls + '">' + p.text + '</span>';
+  });
+  document.getElementById('status-bar').innerHTML = pills;
+
+  // Weather
+  var weatherRows = '';
+  TRIP.days.forEach(function(day) {
+    var active = day.date === d.date ? ' style="border:1px solid var(--accent)"' : '';
+    weatherRows += '<div class="weather-day"' + active + '>' +
+      '<div class="day">' + new Date(day.date+'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}) + '</div>' +
+      '<div class="hi">' + day.weather.hi + '°F</div>' +
+      '<div class="lo">' + day.weather.lo + '°F</div>' +
+      '<div class="rain">' + day.weather.icon + ' ' + day.weather.rain + '%</div>' +
+    '</div>';
+  });
+  document.getElementById('weather-content').innerHTML = weatherRows;
+
+  // Timeline
+  var timeline = '';
+  d.timeline.forEach(function(e) {
+    timeline += '<div class="event"><span class="time">' + e.time + '</span> ' + e.text + '</div>';
+  });
+  document.getElementById('timeline-content').innerHTML = timeline;
+
+  // Food
+  var food = '';
+  d.food.forEach(function(f) {
+    food += '<div class="rec-card">' +
+      '<div class="name">' + f.name + '</div>' +
+      '<div class="meta">' + f.meta + '</div>' +
+      '<div class="thumbs"><button onclick="vote(\''+f.id+'\',\'up\',this)">👍</button><button onclick="vote(\''+f.id+'\',\'down\',this)">👎</button></div>' +
+    '</div>';
+  });
+  document.getElementById('food-content').innerHTML = food;
+
+  // Transit (show on movement days)
+  if (d.transit) {
+    var transit = '';
+    d.transit.forEach(function(t) {
+      transit += '<div class="event">' + t + '</div>';
+    });
+    document.getElementById('transit-content').innerHTML = transit;
+    document.getElementById('transit-section').style.display = '';
+  }
+
+  // Tip
+  document.getElementById('tip-content').innerHTML = d.tip;
+}
+
+// Thumbs feedback
+function vote(id, dir, btn) {
+  var key = 'atlas_vote_' + id;
+  var current = localStorage.getItem(key);
+  var data = current ? JSON.parse(current) : {up:0, down:0, voted: null};
+  var container = btn.parentElement;
+  var upBtn = container.children[0];
+  var downBtn = container.children[1];
+  if (data.voted === dir) {
+    data[dir] = Math.max(0, data[dir] - 1);
+    data.voted = null;
+    upBtn.classList.remove('voted-up');
+    downBtn.classList.remove('voted-down');
+  } else {
+    if (data.voted) { data[data.voted] = Math.max(0, data[data.voted] - 1); }
+    data[dir] = (data[dir] || 0) + 1;
+    data.voted = dir;
+    upBtn.classList.toggle('voted-up', dir === 'up');
+    downBtn.classList.toggle('voted-down', dir === 'down');
+  }
+  localStorage.setItem(key, JSON.stringify(data));
+}
+
+(function(){
+  document.querySelectorAll('.thumbs').forEach(function(el){
+    var btn = el.querySelector('button');
+    if (!btn) return;
+    var match = btn.getAttribute('onclick').match(/vote\('([^']+)'/);
+    if (!match) return;
+    var id = match[1];
+    var data = JSON.parse(localStorage.getItem('atlas_vote_' + id) || '{"up":0,"down":0,"voted":null}');
+    if (data.voted === 'up') el.children[0].classList.add('voted-up');
+    if (data.voted === 'down') el.children[1].classList.add('voted-down');
+  });
+})();
+
+render();
+</script>
+
+</body>
+</html>

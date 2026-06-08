@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Nashville · Alan Jackson Last Call · Jun 26–28, 2026</title>
+<style>
+  :root {
+    --bg: #0a0a0a; --card: #141414; --border: #222;
+    --text: #e0e0e0; --dim: #888; --accent: #ff6a00;
+    --green: #2ecc71; --red: #e74c3c; --blue: #3498db;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.5;
+    max-width: 480px; margin: 0 auto; padding: 16px 16px 40px;
+    -webkit-text-size-adjust: 100%;
+  }
+  .header { text-align: center; padding: 20px 0 12px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+  .header h1 { font-size: 1.5rem; font-weight: 700; }
+  .header .dates { color: var(--dim); font-size: 0.9rem; margin-top: 4px; }
+  .header .emoji { font-size: 2.5rem; display: block; margin-bottom: 4px; }
+  .status-bar { display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto; padding-bottom: 4px; }
+  .status-pill { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 6px 14px; font-size: 0.8rem; white-space: nowrap; flex-shrink: 0; }
+  .status-pill.good { border-color: var(--green); color: var(--green); }
+  .status-pill.warn { border-color: var(--accent); color: var(--accent); }
+  .section { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 14px; }
+  .section h2 { font-size: 1rem; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+  .section h2 .icon { font-size: 1.2rem; }
+  .update { padding: 10px; background: rgba(255,106,0,0.08); border-radius: 8px; margin-bottom: 8px; font-size: 0.85rem; }
+  .update .time { color: var(--accent); font-weight: 600; }
+  .flight-row { display: grid; grid-template-columns: 48px 1fr; gap: 8px; align-items: start; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .flight-row:last-child { border-bottom: none; }
+  .flight-icon { background: var(--bg); border-radius: 8px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
+  .flight-info .route { font-weight: 600; font-size: 0.9rem; }
+  .flight-info .detail { font-size: 0.78rem; color: var(--dim); }
+  .day-block { margin-bottom: 14px; }
+  .day-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); font-weight: 700; margin-bottom: 4px; }
+  .day-event { padding: 8px 10px; background: var(--bg); border-radius: 6px; margin-bottom: 4px; font-size: 0.85rem; }
+  .day-event .time { font-weight: 600; color: var(--accent); }
+  .rec-card { padding: 12px; background: var(--bg); border-radius: 8px; margin-bottom: 8px; position: relative; }
+  .rec-card .name { font-weight: 600; }
+  .rec-card .desc { font-size: 0.8rem; color: var(--dim); margin-top: 4px; }
+  .rec-card .meta { font-size: 0.75rem; color: var(--dim); margin-top: 4px; }
+  .rec-card .badge { position: absolute; top: 10px; right: 12px; font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; font-weight: 600; }
+  .badge.top { background: rgba(255,106,0,0.2); color: var(--accent); }
+  .badge.near { background: rgba(52,152,219,0.2); color: var(--blue); }
+  .badge.award { background: rgba(46,204,113,0.2); color: var(--green); }
+  .badge.nut { background: rgba(231,76,60,0.2); color: var(--red); }
+  .tip { font-size: 0.82rem; padding: 8px 12px; background: rgba(52,152,219,0.08); border-radius: 8px; margin-bottom: 6px; }
+  .tip strong { color: var(--blue); }
+  .countdown { text-align: center; padding: 10px; font-size: 0.9rem; }
+  .countdown .num { font-size: 2rem; font-weight: 800; color: var(--accent); }
+  .footer { text-align: center; font-size: 0.7rem; color: var(--dim); margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border); }
+  .footer a { color: var(--accent); }
+  .weather-row { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
+  .weather-day { background: var(--bg); border-radius: 8px; padding: 10px 14px; text-align: center; min-width: 90px; flex-shrink: 0; }
+  .weather-day .day { font-size: 0.7rem; color: var(--dim); text-transform: uppercase; }
+  .weather-day .icon { font-size: 1.4rem; margin: 4px 0; }
+  .weather-day .hi { font-weight: 700; }
+  .weather-day .lo { font-size: 0.78rem; color: var(--dim); }
+  .weather-day .rain { font-size: 0.68rem; color: var(--blue); }
+  .artist-tag { display: inline-block; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 2px 8px; font-size: 0.72rem; margin: 2px 3px; }
+  .artist-tag.highlight { border-color: var(--accent); color: var(--accent); background: rgba(255,106,0,0.1); }
+  .thumbs { display: flex; gap: 4px; margin-top: 8px; }
+  .thumbs button {
+    background: var(--card); border: 1px solid var(--border); border-radius: 6px;
+    color: var(--dim); font-size: 0.9rem; padding: 3px 8px; cursor: pointer;
+    transition: all 0.15s;
+  }
+  .thumbs button:hover { border-color: var(--accent); }
+  .thumbs button.voted-up { background: rgba(46,204,113,0.15); border-color: var(--green); color: var(--green); }
+  .thumbs button.voted-down { background: rgba(231,76,60,0.15); border-color: var(--red); color: var(--red); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <span class="emoji">🎸</span>
+  <h1>Alan Jackson · Last Call</h1>
+  <div class="dates">June 26–28, 2026 · Nashville, TN</div>
+</div>
+
+<div class="status-bar">
+  <span class="status-pill good">✈️ Flights Booked</span>
+  <span class="status-pill good">🎫 Tickets Secured</span>
+  <span class="status-pill good">🏨 Hotel Confirmed</span>
+  <span class="status-pill warn">🌧️ Sat Rain 56%</span>
+</div>
+
+<div class="section">
+  <h2><span class="icon">🤖</span> Latest Update</h2>
+  <div class="update">
+    <div class="time">Jun 8 — Trip Page Live</div>
+    Full briefing deployed. George Strait + Lainey Wilson added to lineup. NBC filming for prime-time special. Nashville Pride Parade Sat 10am — plan around it. AJ's Good Time Bar is the pre/post-concert HQ.
+  </div>
+</div>
+
+<div class="section">
+  <h2><span class="icon">⏱️</span> Countdown</h2>
+  <div class="countdown">
+    <div class="num" id="countdown-days">X</div>
+    <div id="countdown-label">days until departure</div>
+    <div style="margin-top:6px;font-size:0.75rem;color:var(--dim)">
+      Show in <span id="countdown-event" style="color:var(--accent);font-weight:600">X</span> <span id="countdown-event-label">days</span>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h2><span class="icon">🌤️</span> Weather</h2>
+  <div class="weather-row">
+    <div class="weather-day">
+      <div class="day">Fri Jun 26</div>
+      <div class="icon">⛅</div>
+      <div class="hi">88°F</div>
+      <div class="lo">67°F</div>
+      <div class="rain">💧 26%</div>
+    </div>
+    <div class="weather-day">
+      <div class="day">Sat Jun 27</div>
+      <div class="icon">🌧️</div>
+      <div class="hi">88°F</div>
+      <div class="lo">67°F</div>
+      <div class="rain">💧 56% ⚠️</div>
+    </div>
+    <div class="weather-day">
+      <div class="day">Sun Jun 28</div>
+      <div class="icon">⛅</div>
+      <div class="hi">89°F</div>
+      <div class="lo">68°F</div>
+      <div class="rain">💧 37%</div>
+    </div>
+  </div>
+  <div class="tip" style="margin-top:8px"><strong>⚠️</strong> Saturday has the highest rain chance. Nissan Stadium is open-air — pack a poncho just in case. Heat indices will push upper 90s.</div>
+</div>
+
+<div class="section">
+  <h2><span class="icon">✈️</span> Flights</h2>
+  <div class="flight-row">
+    <div class="flight-icon">🛫</div>
+    <div class="flight-info">
+      <div class="route">MCI → BNA · Fri Jun 26</div>
+      <div class="detail">Southwest 2533 · Depart 1:25 PM CDT · Arrive 3:00 PM CDT · 1h 35m nonstop</div>
+      <div class="detail">2 free checked bags · Terminal/gate: check Southwest app day-of</div>
+    </div>
+  </div>
+  <div class="flight-row">
+    <div class="flight-icon">🛬</div>
+    <div class="flight-info">
+      <div class="route">BNA → MCI · Sun Jun 28</div>
+      <div class="detail">Southwest 3898 · Depart 6:55 PM CDT · Arrive 8:35 PM CDT · 1h 35m nonstop</div>
+      <div class="detail">Late return gives you a full Sunday to explore</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h2><span class="icon">📅</span> Itinerary</h2>
+
+  <div class="day-block">
+    <div class="day-label">Fri Jun 26 · Arrival</div>
+    <div class="day-event"><span class="time">1:25 PM</span> Depart MCI on SWA 2533</div>
+    <div class="day-event"><span class="time">3:00 PM</span> Land at BNA, Uber to hotel (~$20, 15–20 min)</div>
+    <div class="day-event"><span class="time">4:00 PM</span> Check in at Drift Nashville</div>
+    <div class="day-event"><span class="time">Evening</span> Broadway honky-tonks — AJ's Good Time Bar is the must-hit</div>
+    <div class="day-event"><span class="time">7:00 PM</span> Grand Ole Opry — American Aquarium, Chris Housman + TBA. Stars in town may drop in.</div>
+  </div>
+
+  <div class="day-block">
+    <div class="day-label">Sat Jun 27 · Concert Day 🎤</div>
+    <div class="day-event"><span class="time">⚠️ 10:00 AM</span> Nashville Pride Parade on Broadway (8th→2nd). Road closures 7am–1pm. Avoid driving downtown.</div>
+    <div class="day-event"><span class="time">Morning</span> Explore Music Row / Country Music HOF — stick to areas away from parade route</div>
+    <div class="day-event"><span class="time">4:00 PM</span> Gates open at Nissan Stadium (6-min walk from hotel)</div>
+    <div class="day-event"><span class="time">5:30 PM</span> Alan Jackson: Last Call — The Finale</div>
+    <div class="day-event"><span class="time">Post-show</span> AJ's Good Time Bar will be electric. Walk back to hotel.</div>
+  </div>
+
+  <div class="day-block">
+    <div class="day-label">Sun Jun 28 · Departure</div>
+    <div class="day-event"><span class="time">11:00 AM</span> Hotel check-out (store bags at front desk)</div>
+    <div class="day-event"><span class="time">Daytime</span> Explore: Centennial Park, Parthenon, or more Broadway</div>
+    <div class="day-event"><span class="time">🏊 11am-4pm</span> Pride Pool Party at Drift Nashville (~$38, 21+)</div>
+    <div class="day-event"><span class="time">6:55 PM</span> Depart BNA on SWA 3898</div>
+  </div>
+</div>
+
+<div class="section">
+  <h2><span class="icon">🎤</span> The Concert</h2>
+  <div class="rec-card">
+    <div class="name"><a href="https://nissanstadium.com/event/alan-jackson-last-call-the-finale/" style="color:var(--text)">Alan Jackson: Last Call — The Finale</a></div>
+    <div class="desc">Alan Jackson's final full-length concert before retirement. 50,000+ fans, filmed by NBC for a prime-time special. Presented by Silverbelly Whiskey.</div>
+    <div class="meta">
+      <a href="https://www.google.com/maps/search/Nissan+Stadium+1+Titans+Way+Nashville+TN" style="color:var(--accent)">📍 Nissan Stadium, 1 Titans Way</a> · 🚪 Gates 4:00 PM · 🎵 Show 5:30 PM CT<br>
+      <a href="https://nissanstadium.com/event/alan-jackson-last-call-the-finale/" style="color:var(--dim)">nissanstadium.com/event/alan-jackson-last-call-the-finale</a>
+    </div>
+  </div>
+  <div style="margin-top:10px">
+    <div style="font-weight:600;font-size:0.85rem;margin-bottom:6px">All-Star Lineup</div>
+    <span class="artist-tag highlight">Eric Church 🔥</span>
+    <span class="artist-tag highlight">George Strait 👑</span>
+    <span class="artist-tag highlight">Lainey Wilson</span>
+    <span class="artist-tag">Luke Bryan</span>
+    <span class="artist-tag">Luke Combs</span>
+    <span class="artist-tag">Riley Green</span>
+    <span class="artist-tag">Cody Johnson</span>
+    <span class="artist-tag">Miranda Lambert</span>
+    <span class="artist-tag">Little Big Town</span>
+    <span class="artist-tag">Jake Owen</span>
+    <span class="artist-tag">Jon Pardi</span>
+    <span class="artist-tag">Thomas Rhett</span>
+    <span class="artist-tag">Carrie Underwood</span>
+    <span class="artist-tag">Lee Ann Womack</span>
+    <span class="artist-tag">Adam Wright</span>
+    <span class="artist-tag">Big City Brian Wright</span>
+    <span class="artist-tag">Carlisle Wright</span>
+  </div>
+  <div class="tip" style="margin-top:10px"><strong>📺 NBC is filming</strong> — "Alan Jackson: The Last Show" prime-time special airs later this year on NBC, streams on Peacock. Cameras everywhere — this is a big production.</div>
+</div>
+
+<div class="section">
+  <h2><span class="icon">🎉</span> Pop-Up Intel</h2>
+
+  <div class="rec-card">
+    <div class="name"><a href="https://www.google.com/maps/search/AJ's+Good+Time+Bar+421+Broadway+Nashville" style="color:var(--text)">AJ's Good Time Bar</a></div>
+    <span class="badge top">MUST VISIT</span>
+    <div class="desc">Alan Jackson's own 4-story honky-tonk. The ONLY solely-owned artist bar on Broadway. Heroes Wall, rooftop, live music daily at 6pm. Voted #1 honky-tonk by Billboard. Open 11am–2:30am daily. No cover.</div>
+    <div class="meta"><a href="https://www.google.com/maps/search/AJ's+Good+Time+Bar+421+Broadway+Nashville" style="color:var(--accent)">📍 421 Broadway</a> · 21+ after 6pm</div>
+  </div>
+
+  <div class="rec-card">
+    <div class="name"><a href="https://www.google.com/maps/search/121+3rd+Ave+S+Nashville+TN+37201" style="color:var(--text)">Silverbelly Whiskey SoBro Bar</a></div>
+    <span class="badge near">WATCH</span>
+    <div class="desc">Alan Jackson's whiskey brand building out a standalone bar. Expected "Summer 2026" — not confirmed open by June 27, but a soft open for concert weekend is plausible. Worth walking by.</div>
+    <div class="meta"><a href="https://www.google.com/maps/search/121+3rd+Ave+S+Nashville+TN+37201" style="color:var(--accent)">📍 121 3rd Ave S, SoBro</a> · Jeff doesn't drink — visit for the memorabilia</div>
+  </div>
+
+  <div class="rec-card">
+    <div class="name"><a href="https://www.nashvillepride.org/parade" style="color:var(--text)">Nashville Pride Parade</a></div>
+    <div class="desc">Saturday June 27, 10am on Broadway (8th→2nd Ave). Free. Festival follows at Bicentennial Mall 11am–9pm. Road closures 7am–1pm.</div>
+    <div class="meta"><a href="https://www.nashvillepride.org/parade" style="color:var(--accent)">nashvillepride.org/parade</a></div>
+  </div>
+</div>
+
+<div class="section">
+  <h2><span class="icon">🏨</span> Hotel</h2>
+  <div class="rec-card">
+    <div class="name"><a href="https://www.google.com/maps/search/Drift+Nashville+10+Interstate+Drive+Nashville+TN+37213" style="color:var(--text)">Drift Nashville · Design Hotels</a></div>
+    <div class="desc">East Bank location — same side of river as Nissan Stadium. Walk to stadium in 6–8 min. Pedestrian bridge to Broadway in 15 min.</div>
+    <div class="meta">
+      <a href="https://www.google.com/maps/search/Drift+Nashville+10+Interstate+Drive+Nashville+TN+37213" style="color:var(--accent)">📍 10 Interstate Dr, Nashville, TN 37213</a><br>
+      Check-in: Fri 4pm · Check-out: Sun 11am<br>
+      Cancellation: Full refund if cancelled 7+ days before check-in
+    </div>
+  </div>
+  <div class="tip"><strong>🕓 Check-in is 4pm</strong> — your flight lands at 3pm. Perfect timing: collect bags, Uber (~$20, 15-20min), and you'll arrive right at 4.</div>
+</div>
+
+<div class="section">
+  <h2><span class="icon">🥩</span> Steakhouses</h2>
+
+  <div class="rec-card">
+    <div class="name"><a href="https://www.google.com/maps/search/Jimmy+Kelly's+Steakhouse+217+Louise+Ave+Nashville" style="color:var(--text)">Jimmy Kelly's Steakhouse</a></div>
+    <span class="badge top">TOP PICK</span>
+    <div class="desc">Nashville institution since 1934 in a grand Southern mansion. Third-generation, locally owned. Hand-cut Midwest grain-fed steaks aged 28 days.</div>
+    <div class="meta"><a href="https://www.google.com/maps/search/Jimmy+Kelly's+Steakhouse+217+Louise+Ave+Nashville" style="color:var(--accent)">📍 217 Louise Ave</a> · ~1.5 mi from hotel · 🥜 Low risk</div>
+    <div class="thumbs">
+      <button onclick="vote('steak-jimmy-kellys','up',this)" title="Loved it">👍</button>
+      <button onclick="vote('steak-jimmy-kellys','down',this)" title="Not for me">👎</button>
+    </div>
+  </div>
+
+  <div class="rec-card">
+    <div class="name"><a href="https://www.google.com/maps/search/Jeff+Ruby's+Steakhouse+300+4th+Avenue+N+Nashville" style="color:var(--text)">Jeff Ruby's Steakhouse</a></div>
+    <span class="badge award">AWARD</span>
+    <div class="desc">Family-owned since 1981. USDA Prime steaks, fresh seafood, sushi. Voted Nashville's Best Steakhouse. Art Deco dining room with live entertainment.</div>
+    <div class="meta"><a href="https://www.google.com/maps/search/Jeff+Ruby's+Steakhouse+300+4th+Avenue+N+Nashville" style="color:var(--accent)">📍 300 4th Ave N</a> · ~1.2 mi · 🥜 Low-mod (tempura crunch on sushi)</div>
+    <div class="thumbs">
+      <button onclick="vote('steak-jeff-rubys','up',this)" title="Loved it">👍</button>
+      <button onclick="vote('steak-jeff-rubys','down',this)" title="Not for me">👎</button>
+    </div>
+  </div>
+
+  <div class="rec-card">
+    <div class="name"><a href="https://www.google.com/maps/search/The+Southern+Steak+%26+Oyster+150+3rd+Ave+S+Nashville" style="color:var(--text)">The Southern Steak & Oyster</a></div>
+    <span class="badge near">NEARBY</span>
+    <div class="desc">Locally owned by Nashville native Tom Morales. Dry-aged steaks, oysters, and Southern sides in the heart of SoBro. Under a mile from hotel.</div>
+    <div class="meta"><a href="https://www.google.com/maps/search/The+Southern+Steak+%26+Oyster+150+3rd+Ave+S+Nashville" style="color:var(--accent)">📍 150 3rd Ave S</a> · ~1.0 mi · 🥜 Low risk</div>
+    <div class="thumbs">
+      <button onclick="vote('steak-southern','up',this)" title="Loved it">👍</button>
+      <button onclick="vote('steak-southern','down',this)" title="Not for me">👎</button>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h2><span class="icon">🍗</span> Hot Chicken</h2>
+
+  <div class="rec-card">
+    <div class="name"><a href="https://www.google.com/maps/search/Prince's+Hot+Chicken+5055+Broadway+Pl+Nashville" style="color:var(--text)">Prince's Hot Chicken</a></div>
+    <span class="badge top">ORIGINAL</span>
+    <div class="desc">The 100-year-old original. Family-owned James Beard America's Classic. Assembly Food Hall location downtown. Cooks in vegetable oil — no peanut oil.</div>
+    <div class="meta"><a href="https://www.google.com/maps/search/Prince's+Hot+Chicken+5055+Broadway+Pl+Nashville" style="color:var(--accent)">📍 5055 Broadway Pl (Assembly Food Hall, L2)</a> · ~1.2 mi · 🥜 Low risk (vegetable oil)</div>
+    <div class="thumbs">
+      <button onclick="vote('chicken-princes','up',this)" title="Loved it">👍</button>
+      <button onclick="vote('chicken-princes','down',this)" title="Not for me">👎</button>
+    </div>
+  </div>
+
+  <div class="rec-card">
+    <div class="name"><a href="https://www.google.com/maps/search/Hattie+B's+Hot+Chicken+5055+Broadway+Pl+Nashville" style="color:var(--text)">Hattie B's Hot Chicken</a></div>
+    <span class="badge near">SAFE BET</span>
+    <div class="desc">Family-run, 6 heat levels from Southern to Shut the Cluck Up. Fries in soybean oil — no peanuts or tree nuts. Online ordering available to skip the line.</div>
+    <div class="meta"><a href="https://www.google.com/maps/search/Hattie+B's+Hot+Chicken+5055+Broadway+Pl+Nashville" style="color:var(--accent)">📍 5055 Broadway Pl (Assembly Food Hall)</a> · ~1.2 mi · 🥜 Lowest risk (soybean oil, nut-free)</div>
+    <div class="thumbs">
+      <button onclick="vote('chicken-hattie-bs','up',this)" title="Loved it">👍</button>
+      <button onclick="vote('chicken-hattie-bs','down',this)" title="Not for me">👎</button>
+    </div>
+  </div>
+
+  <div class="rec-card">
+    <div class="name"><a href="https://www.google.com/maps/search/Bolton's+Spicy+Chicken+%26+Fish+624+Main+St+Nashville" style="color:var(--text)">Bolton's Spicy Chicken & Fish</a></div>
+    <span class="badge nut">⚠️ CHECK</span>
+    <div class="desc">East Nashville legend since the 90s. Dry-rub heat, known for running hotter than most. Famous hot fish too. True local spot, not touristy.</div>
+    <div class="meta"><a href="https://www.google.com/maps/search/Bolton's+Spicy+Chicken+%26+Fish+624+Main+St+Nashville" style="color:var(--accent)">📍 624 Main St</a> · ~2.5 mi · 🥜 Unknown — call ahead about fryer oil if Luke is coming</div>
+    <div class="thumbs">
+      <button onclick="vote('chicken-boltons','up',this)" title="Loved it">👍</button>
+      <button onclick="vote('chicken-boltons','down',this)" title="Not for me">👎</button>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h2><span class="icon">🍽️</span> Dinner Spots</h2>
+
+  <div class="rec-card">
+    <div class="name"><a href="https://www.google.com/maps/search/Marsh+House+401+11th+Ave+S+Nashville" style="color:var(--text)">Marsh House</a></div>
+    <span class="badge top">SEAFOOD</span>
+    <div class="desc">Refined Southern coastal dining in The Gulch. Fresh oysters, seafood towers, Gulf-inspired dishes. Best upscale seafood near the hotel.</div>
+    <div class="meta"><a href="https://www.google.com/maps/search/Marsh+House+401+11th+Ave+S+Nashville" style="color:var(--accent)">📍 401 11th Ave S, The Gulch</a> · ~1.5 mi · 🥜 Moderate (call ahead)</div>
+    <div class="thumbs">
+      <button onclick="vote('dinner-marsh-house','up',this)" title="Loved it">👍</button>
+      <button onclick="vote('dinner-marsh-house','down',this)" title="Not for me">👎</button>
+    </div>
+  </div>
+
+  <div class="rec-card">
+    <div class="name"><a href="https://www.google.com/maps/search/The+Farm+House+210+Almond+St+Nashville" style="color:var(--text)">The Farm House</a></div>
+    <span class="badge near">SOUTHERN</span>
+    <div class="desc">Locally owned, chef-driven farm-to-table Southern. Scratch-made comfort food, house-baked cornbread, premium steaks. One block from Music City Center.</div>
+    <div class="meta"><a href="https://www.google.com/maps/search/The+Farm+House+210+Almond+St+Nashville" style="color:var(--accent)">📍 210 Almond St</a> · ~1.0 mi · 🥜 Low-mod (scratch kitchen, inform server)</div>
+    <div class="thumbs">
+      <button onclick="vote('dinner-farm-house','up',this)" title="Loved it">👍</button>
+      <button onclick="vote('dinner-farm-house','down',this)" title="Not for me">👎</button>
+    </div>
+  </div>
+
+  <div class="rec-card">
+    <div class="name"><a href="https://www.google.com/maps/search/Culaccino+900+Commerce+St+Nashville" style="color:var(--text)">Culaccino</a></div>
+    <span class="badge near">ITALIAN</span>
+    <div class="desc">Locally owned by Chef Frank Pullara. Authentic Italian with scratch-made pasta and 72-hour fermented wood-fired pizza. True trattoria — not a chain.</div>
+    <div class="meta"><a href="https://www.google.com/maps/search/Culaccino+900+Commerce+St+Nashville" style="color:var(--accent)">📍 900 Commerce St, Nashville Yards</a> · ~1.2 mi · 🥜 Low (pine nuts in pesto only)</div>
+    <div class="thumbs">
+      <button onclick="vote('dinner-culaccino','up',this)" title="Loved it">👍</button>
+      <button onclick="vote('dinner-culaccino','down',this)" title="Not for me">👎</button>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h2><span class="icon">☕</span> Coffee</h2>
+
+  <div class="rec-card">
+    <div class="name"><a href="https://www.google.com/maps/search/Crema+Coffee+Roasters+15+Hermitage+Ave+Nashville" style="color:var(--text)">Crema Coffee Roasters</a></div>
+    <span class="badge top">TOP PICK</span>
+    <div class="desc">Nashville specialty coffee pioneer since 2008. Flagship location with on-site Coffee Education Lab. Zero-waste roaster. Closest true specialty roaster to hotel.</div>
+    <div class="meta"><a href="https://www.google.com/maps/search/Crema+Coffee+Roasters+15+Hermitage+Ave+Nashville" style="color:var(--accent)">📍 15 Hermitage Ave</a> · ~0.8 mi · 🥜 Pastries from Dozen Bakery (may contain nuts)</div>
+    <div class="thumbs">
+      <button onclick="vote('coffee-crema','up',this)" title="Loved it">👍</button>
+      <button onclick="vote('coffee-crema','down',this)" title="Not for me">👎</button>
+    </div>
+  </div>
+
+  <div class="rec-card">
+    <div class="name"><a href="https://www.google.com/maps/search/Frothy+Monkey+235+Rep+John+Lewis+Way+N+Nashville" style="color:var(--text)">Frothy Monkey Downtown</a></div>
+    <span class="badge near">ALL-DAY</span>
+    <div class="desc">Nashville original since 2004. Local roaster, all-day cafe, in-house bakery. Full food menu — breakfast and lunch. Convenient to Broadway and the pedestrian bridge.</div>
+    <div class="meta"><a href="https://www.google.com/maps/search/Frothy+Monkey+235+Rep+John+Lewis+Way+N+Nashville" style="color:var(--accent)">📍 235 Rep. John Lewis Way N</a> · ~1.0 mi · 🥜 Menu includes peanut butter items — avoid those</div>
+    <div class="thumbs">
+      <button onclick="vote('coffee-frothy','up',this)" title="Loved it">👍</button>
+      <button onclick="vote('coffee-frothy','down',this)" title="Not for me">👎</button>
+    </div>
+  </div>
+
+  <div class="rec-card">
+    <div class="name"><a href="https://www.google.com/maps/search/Elegy+Coffee+150+4th+Ave+N+Nashville" style="color:var(--text)">Elegy Coffee Downtown</a></div>
+    <span class="badge near">CRAFT</span>
+    <div class="desc">Specialty micro-roaster with carefully sourced beans and creative seasonal drinks. Compact downtown space — great for a quick, serious cup. Open daily 7am–4pm.</div>
+    <div class="meta"><a href="https://www.google.com/maps/search/Elegy+Coffee+150+4th+Ave+N+Nashville" style="color:var(--accent)">📍 150 4th Ave N, Suite G250</a> · ~1.1 mi · 🥜 Pastries may contain nuts</div>
+    <div class="thumbs">
+      <button onclick="vote('coffee-elegy','up',this)" title="Loved it">👍</button>
+      <button onclick="vote('coffee-elegy','down',this)" title="Not for me">👎</button>
+    </div>
+  </div>
+
+  <div class="rec-card">
+    <div class="name"><a href="https://www.google.com/maps/search/Starbucks+170+4th+Ave+N+Nashville" style="color:var(--text)">Starbucks (Courtyard Downtown)</a></div>
+    <span class="badge near">FALLBACK</span>
+    <div class="desc">Reliable fallback. Located inside the Courtyard Nashville Downtown. Open standard Starbucks hours.</div>
+    <div class="meta"><a href="https://www.google.com/maps/search/Starbucks+170+4th+Ave+N+Nashville" style="color:var(--accent)">📍 170 4th Ave N</a> · ~1.0 mi</div>
+    <div class="thumbs">
+      <button onclick="vote('coffee-starbucks','up',this)" title="Loved it">👍</button>
+      <button onclick="vote('coffee-starbucks','down',this)" title="Not for me">👎</button>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h2><span class="icon">🗺️</span> Activities & Must-Sees</h2>
+
+  <div class="rec-card">
+    <div class="name"><a href="https://www.countrymusichalloffame.org/" style="color:var(--text)">Country Music Hall of Fame</a></div>
+    <span class="badge top">ESSENTIAL</span>
+    <div class="desc">World's largest popular music museum. Open daily 9am–5pm. Adult $31.95. Add RCA Studio B tour for $23. Allow 2+ hours.</div>
+    <div class="meta"><a href="https://www.google.com/maps/search/Country+Music+Hall+of+Fame+222+Rep+John+Lewis+Way+S+Nashville" style="color:var(--accent)">📍 222 Rep. John Lewis Way S</a> · <a href="https://www.countrymusichalloffame.org/" style="color:var(--dim)">countrymusichalloffame.org</a></div>
+  </div>
+
+  <div class="rec-card">
+    <div class="name"><a href="https://www.ryman.com/" style="color:var(--text)">Ryman Auditorium</a></div>
+    <span class="badge award">HISTORIC</span>
+    <div class="desc">The "Mother Church of Country Music." Self-guided tours available. Original oak pews, legendary acoustics, backstage museum.</div>
+    <div class="meta"><a href="https://www.google.com/maps/search/Ryman+Auditorium+116+5th+Ave+N+Nashville" style="color:var(--accent)">📍 116 5th Ave N</a> · <a href="https://www.ryman.com/" style="color:var(--dim)">ryman.com</a></div>
+  </div>
+
+  <div class="rec-card">
+    <div class="name"><a href="https://www.google.com/maps/search/RCA+Studio+B+1611+Roy+Acuff+Place+Nashville" style="color:var(--text)">RCA Studio B</a></div>
+    <span class="badge near">MUSIC ROW</span>
+    <div class="desc">Historic "Home of 1,000 Hits" — Elvis, Dolly, Roy Orbison recorded here. Tours depart from CMHoF daily 10am–3pm. $23 add-on to museum admission.</div>
+    <div class="meta"><a href="https://www.google.com/maps/search/RCA+Studio+B+1611+Roy+Acuff+Place+Nashville" style="color:var(--accent)">📍 1611 Roy Acuff Place, Music Row</a></div>
+  </div>
+
+  <div class="rec-card">
+    <div class="name"><a href="https://www.google.com/maps/search/Tootsie's+Orchid+Lounge+422+Broadway+Nashville" style="color:var(--text)">Tootsie's Orchid Lounge</a></div>
+    <div class="desc">Historic purple-painted institution. Four stages, three bars. Back door opens to the alley behind the Ryman — legendary Grand Ole Opry performer hangout. Classic country, no cover.</div>
+    <div class="meta"><a href="https://www.google.com/maps/search/Tootsie's+Orchid+Lounge+422+Broadway+Nashville" style="color:var(--accent)">📍 422 Broadway</a></div>
+  </div>
+
+  <div class="rec-card">
+    <div class="name"><a href="https://www.google.com/maps/search/Robert's+Western+World+416+Broadway+Nashville" style="color:var(--text)">Robert's Western World</a></div>
+    <div class="desc">Locals' favorite for traditional country — not pop-country cover acts. Famous $6 "Recession Special" (fried bologna sandwich, chips, Moon Pie, PBR).</div>
+    <div class="meta"><a href="https://www.google.com/maps/search/Robert's+Western+World+416+Broadway+Nashville" style="color:var(--accent)">📍 416 Broadway</a></div>
+  </div>
+
+  <div class="rec-card">
+    <div class="name"><a href="https://www.google.com/maps/search/Parthenon+Centennial+Park+2500+West+End+Ave+Nashville" style="color:var(--text)">The Parthenon at Centennial Park</a></div>
+    <div class="desc">Full-scale replica of the Athenian Parthenon with 42-foot Athena statue and art museum. Beautiful park with lake and walking paths.</div>
+    <div class="meta"><a href="https://www.google.com/maps/search/Parthenon+Centennial+Park+2500+West+End+Ave+Nashville" style="color:var(--accent)">📍 2500 West End Ave</a></div>
+  </div>
+
+  <div class="rec-card">
+    <div class="name"><a href="https://www.google.com/maps/search/Grand+Ole+Opry+2802+Opryland+Dr+Nashville" style="color:var(--text)">Grand Ole Opry</a></div>
+    <span class="badge top">🔥 WATCH</span>
+    <div class="desc">Fri 7pm: American Aquarium, Chris Housman + TBA. Sun 7pm: Rhett Akins (Thomas Rhett's dad!), Billy Dean, Lorrie Morgan + TBA. Both nights have "more artists TBA" — with every country star in town, surprises are likely.</div>
+    <div class="meta"><a href="https://www.opry.com/show/2026-06-26-grand-ole-opry-opry-100-at-7-pm" style="color:var(--accent)">📍 2802 Opryland Dr</a> · <a href="https://www.opry.com" style="color:var(--dim)">opry.com</a></div>
+  </div>
+</div>
+
+<div class="section">
+  <h2><span class="icon">🚊</span> Getting Around</h2>
+  <div class="day-event"><span class="time">BNA → Hotel</span> Uber/Lyft $15–28 (15–25min). Taxi $25–35. WeGo Bus Route 18 ($2, ~33min). No hotel shuttle.</div>
+  <div class="day-event"><span class="time">Hotel → Stadium</span> 6–8 min walk. You're on the same side of the river!</div>
+  <div class="day-event"><span class="time">Hotel → Broadway</span> 15 min walk via John Seigenthaler Pedestrian Bridge. Or 5 min rideshare.</div>
+  <div class="day-event"><span class="time">⚠️ Sat AM</span> Pride Parade closes Broadway 7am–1pm. Avoid driving downtown. Walk to stadium instead.</div>
+</div>
+
+<div class="section">
+  <h2><span class="icon">💡</span> Local Intel</h2>
+  <div class="tip"><strong>🎒 Nissan Stadium Bag Policy:</strong> Clear bags up to 12"×12"×6". Non-transparent bags no larger than 4.5"×6.5". No outside food/drinks, umbrellas, large cameras, selfie sticks. Storage lockers $10 at Gates 3 & 9.</div>
+  <div class="tip"><strong>🌡️ Late June Nashville:</strong> Hot and humid. Highs 88–89°F, heat indices upper 90s–low 100s. Stay hydrated. Wear comfortable walking shoes.</div>
+  <div class="tip"><strong>💵 Broadway Tips:</strong> Carry small bills for tipping musicians ($5–10 per set). Most honky-tonks have no cover — tip the band.</div>
+  <div class="tip"><strong>🛡️ Safety:</strong> Downtown crime down ~20% YTD. 300+ MNPD officers deployed during major events. Drift Nashville has overnight security. Walk in well-lit areas, keep valuables secure.</div>
+  <div class="tip"><strong>🕐 Time Zone:</strong> Central Daylight Time (CDT). Same as Kansas City — no jet lag.</div>
+</div>
+
+<div class="footer">
+  Atlas Travel Concierge · Auto-refreshes with live updates<br>
+  Last updated: June 8, 2026 · <a href="#" onclick="location.reload()">Tap to refresh</a><br>
+  <a href="https://jarvisdanley.github.io/nashville-alan-jackson-2026-06/today.html">📅 Today View</a> · <a href="https://jarvisdanley.github.io">🏠 All Trips</a>
+</div>
+
+<script>
+(function() {
+  const depart = new Date('2026-06-26T13:25:00-05:00');
+  const event = new Date('2026-06-27T17:30:00-05:00');
+  function update() {
+    const now = new Date();
+    const tripStarted = now >= depart;
+    const d = Math.max(0, Math.ceil((depart - now) / 86400000));
+    document.getElementById('countdown-days').textContent = tripStarted ? '🟢' : d;
+    document.getElementById('countdown-label').textContent = tripStarted ? 'TRIP IN PROGRESS' : 'days until departure';
+    document.getElementById('countdown-event').textContent = Math.max(0, Math.ceil((event - now) / 86400000));
+    if (tripStarted) {
+      document.getElementById('countdown-event-label').textContent = 'until showtime';
+    }
+  }
+  update();
+  setInterval(update, 60000);
+})();
+
+function vote(id, dir, btn) {
+  var key = 'atlas_vote_' + id;
+  var current = localStorage.getItem(key);
+  var data = current ? JSON.parse(current) : {up:0, down:0, voted: null};
+  var container = btn.parentElement;
+  var upBtn = container.children[0];
+  var downBtn = container.children[1];
+  if (data.voted === dir) {
+    data[dir] = Math.max(0, data[dir] - 1);
+    data.voted = null;
+    upBtn.classList.remove('voted-up');
+    downBtn.classList.remove('voted-down');
+  } else {
+    if (data.voted) {
+      data[data.voted] = Math.max(0, data[data.voted] - 1);
+    }
+    data[dir] = (data[dir] || 0) + 1;
+    data.voted = dir;
+    upBtn.classList.toggle('voted-up', dir === 'up');
+    downBtn.classList.toggle('voted-down', dir === 'down');
+  }
+  localStorage.setItem(key, JSON.stringify(data));
+}
+
+(function(){
+  document.querySelectorAll('.thumbs').forEach(function(el){
+    var btn = el.querySelector('button');
+    if (!btn) return;
+    var match = btn.getAttribute('onclick').match(/vote\('([^']+)'/);
+    if (!match) return;
+    var id = match[1];
+    var data = JSON.parse(localStorage.getItem('atlas_vote_' + id) || '{"up":0,"down":0,"voted":null}');
+    if (data.voted === 'up') el.children[0].classList.add('voted-up');
+    if (data.voted === 'down') el.children[1].classList.add('voted-down');
+  });
+})();
+</script>
+
+</body>
+</html>
