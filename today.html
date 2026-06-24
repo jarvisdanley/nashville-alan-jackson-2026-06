@@ -95,7 +95,7 @@
 <script>
 var TRIP = {
   start: '2026-06-26',
-  end: '2026-06-28',
+  end: '2026-06-29',
   days: [
     {
       date: '2026-06-26',
@@ -158,30 +158,52 @@ var TRIP = {
     },
     {
       date: '2026-06-28',
-      label: 'Sunday · Departure',
+      label: 'Sunday · Free Day + Grand Ole Opry 🎻',
       weather: { hi: 94, lo: 73, icon: '☀️', rain: 20 },
       pills: [
-        { text: '🏨 Check-out 11am', cls: 'good' },
-        { text: '✈️ Flight 6:55pm', cls: 'good' },
-        { text: '🏊 Pool Party 11am', cls: 'good' }
+        { text: '🎻 Opry 7:00pm', cls: 'good' },
+        { text: '🏊 Pool Party 11am', cls: 'good' },
+        { text: '🏨 Check-out 11am', cls: 'warn' }
       ],
       timeline: [
-        { time: '11:00 AM', text: 'Hotel check-out · Store bags at front desk' },
+        { time: '11:00 AM', text: 'Hotel check-out · Store bags at front desk (or enjoy room if extended)' },
         { time: '11am–4pm', text: 'Pride Pool Party at Drift Nashville (~$38)' },
-        { time: 'Daytime', text: 'Explore: Centennial Park, Parthenon, or more Broadway' },
-        { time: '6:55 PM', text: 'Depart BNA on SWA 3898' },
-        { time: '8:35 PM', text: 'Arrive MCI' }
+        { time: 'Daytime', text: 'Explore: Centennial Park, Parthenon, or Silverbelly Distillery + Alan Jackson Museum' },
+        { time: '7:00 PM', text: '🎻 Grand Ole Opry — Rhett Akins, Billy Dean, Lorrie Morgan + TBA. Section 17 Row B. Ride-share (~15 min)' },
+        { time: 'Post-show', text: 'AJ\\'s Good Time Bar for post-Opry wind-down' },
+        { time: '🛏️', text: '⚠️ Hotel extension needed — currently 2 nights only' }
       ],
       transit: [
-        'Hotel → BNA: Uber/Lyft $15–28 (15–25min)',
-        'Free day — bags stored at hotel until your flight'
+        'Hotel → Opry House: Uber/Lyft ~$15 (15min)',
+        'Free day — bags stored at hotel'
       ],
-      tip: 'Late flight means a full day to soak up Nashville. Check out at 11, store your bags, and head out. The hotel is hosting a Pride Pool Party if you want a relaxed close to the weekend. Centennial Park and the Parthenon are great daytime options. Head to BNA by ~5pm for your 6:55pm flight.',
+      tip: 'The Opry conflict is RESOLVED! With the return flight moved to Monday morning, Sunday is now a full Nashville day. Silverbelly Distillery + Alan Jackson Museum just opened Jun 25 — catch it while the concert buzz is still electric. The Opry at 7pm with Rhett Akins (Thomas Rhett\\'s dad!) could have surprise father-son moments. Post-show, AJ\\'s Good Time Bar for a final Broadway night.',
       food: [
         { name: 'Culaccino', meta: '📍 900 Commerce St · ~1.2 mi · Authentic Italian trattoria', id: 'today-dinner-culaccino' },
         { name: 'The Farm House', meta: '📍 210 Almond St · ~1.0 mi · Farm-to-table Southern', id: 'today-dinner-farm-house' },
         { name: 'Elegy Coffee', meta: '📍 150 4th Ave N · ~1.1 mi · Craft micro-roaster', id: 'today-coffee-elegy' }
       ]
+    },
+    {
+      date: '2026-06-29',
+      label: 'Monday · Departure ✈️',
+      weather: { hi: 93, lo: 74, icon: '☀️', rain: 15 },
+      pills: [
+        { text: '✈️ Depart 8:15am', cls: 'good' },
+        { text: '🏨 Check-out', cls: 'good' }
+      ],
+      timeline: [
+        { time: '~6:00 AM', text: 'Wake up, final pack' },
+        { time: '~6:30 AM', text: 'Uber/Lyft to BNA ($15-28, 15-25min)' },
+        { time: '8:15 AM', text: 'Depart BNA on SWA 4289 · Jeff: 03F, Marcie: 03E' },
+        { time: '9:55 AM', text: 'Land at MCI — trip complete!' }
+      ],
+      transit: [
+        'Hotel → BNA: Uber/Lyft $15–28 (15–25min)',
+        'Early morning — minimal traffic'
+      ],
+      tip: 'Early morning departure but it\\'s a quick nonstop home. You\\'ll be back in KC before 10am with a whole day ahead. BNA is quiet at 6:30am — smooth security. You and Marcie are side by side in Extra Legroom (03E + 03F) — nice way to end the trip.',
+      food: []
     }
   ]
 };
