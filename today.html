@@ -159,25 +159,27 @@ var TRIP = {
     {
       date: '2026-06-28',
       label: 'Sunday · Free Day + Grand Ole Opry 🎻',
-      weather: { hi: 96, lo: 76, icon: '☀️', rain: 10 },
+      weather: { hi: 93, lo: 76, icon: '⛅', rain: 40 },
       pills: [
         { text: '🎻 Opry 7:00pm', cls: 'good' },
-        { text: '🏊 Pool Party 11am', cls: 'good' },
-        { text: '🏨 Check-out 11am', cls: 'warn' }
+        { text: '⚠️ Flood Watch Expired', cls: 'good' },
+        { text: '⚡ Concert Delayed Last Night', cls: 'warn' },
+        { text: '🏨 Check-out or Extend', cls: 'warn' }
       ],
       timeline: [
+        { time: '⚡ Last Night', text: 'Concert lightning delay ~8:35pm — evacuated to concourses. All-clear ~9:50pm. Alan Jackson took stage ~9:25pm. Show completed.' },
         { time: '11:00 AM', text: 'Hotel check-out · Store bags at front desk (or enjoy room if extended)' },
-        { time: '11am–4pm', text: 'Pride Pool Party at Drift Nashville (~$38)' },
-        { time: 'Daytime', text: 'Explore: Centennial Park, Parthenon, or Silverbelly Distillery + Alan Jackson Museum' },
-        { time: '7:00 PM', text: '🎻 Grand Ole Opry — Rhett Akins, Billy Dean, Lorrie Morgan + TBA. Section 17 Row B. Ride-share (~15 min)' },
+        { time: 'Daytime', text: 'Explore: Silverbelly Distillery + Alan Jackson Museum (opened Jun 25!), Centennial Park, Parthenon, or more Broadway' },
+        { time: '6:00 PM', text: 'Doors open at Grand Ole Opry House' },
+        { time: '7:00 PM', text: '🎻 Grand Ole Opry: Celebrates \\'90s Country — Rhett Akins, Billy Dean, Lorrie Morgan, Carlisle Wright (AJ concert double-header!), Dailey & Vincent + TBA. Section 17 Row B. Ride-share ~15 min.' },
         { time: 'Post-show', text: 'AJ\\'s Good Time Bar for post-Opry wind-down' },
-        { time: '🛏️', text: '⚠️ Hotel extension needed — currently 2 nights only' }
+        { time: '🛏️', text: '⚠️ Hotel extension still needed — currently 2 nights only' }
       ],
       transit: [
         'Hotel → Opry House: Uber/Lyft ~$15 (15min)',
         'Free day — bags stored at hotel'
       ],
-      tip: 'The Opry conflict is RESOLVED! With the return flight moved to Monday morning, Sunday is now a full Nashville day. Silverbelly Distillery + Alan Jackson Museum just opened Jun 25 — catch it while the concert buzz is still electric. The Opry at 7pm with Rhett Akins (Thomas Rhett\\'s dad!) could have surprise father-son moments. Post-show, AJ\\'s Good Time Bar for a final Broadway night.',
+      tip: '⚡ What a night. Lightning delay at ~8:35pm forced the stadium to evacuate — but the show went on. Alan Jackson took the stage at ~9:25pm and the all-star lineup delivered. Now it\\'s your free day. Flood Watch expired at 7am — Sunday is mostly sunny with a 40% chance of morning showers. Heat index up to 108°F — stay hydrated. The Silverbelly Distillery + Alan Jackson Museum just opened Jun 25 — catch it while the concert buzz is still electric. Tonight: Grand Ole Opry at 7pm. Rhett Akins (Thomas Rhett\\'s dad!) headlining — father-son moment possible. Carlisle Wright pulls the AJ concert / Opry double-header. Still \\"MORE ARTISTS TO BE ANNOUNCED.\\" 🚨 BNA had 178 flight delays Saturday — monitor Southwest app for tomorrow\\'s 8:15am return. Hotel extension still needed for tonight.',
       food: [
         { name: 'Culaccino', meta: '📍 900 Commerce St · ~1.2 mi · Authentic Italian trattoria', id: 'today-dinner-culaccino' },
         { name: 'The Farm House', meta: '📍 210 Almond St · ~1.0 mi · Farm-to-table Southern', id: 'today-dinner-farm-house' },
@@ -187,7 +189,7 @@ var TRIP = {
     {
       date: '2026-06-29',
       label: 'Monday · Departure ✈️',
-      weather: { hi: 94, lo: 74, icon: '☀️', rain: 10 },
+      weather: { hi: 98, lo: 78, icon: '☀️', rain: 0 },
       pills: [
         { text: '✈️ Depart 8:15am', cls: 'good' },
         { text: '🏨 Check-out', cls: 'good' }
